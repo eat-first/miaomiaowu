@@ -2643,20 +2643,18 @@ function SubscribeFilesPage() {
                           }}
                         >
                           <PopoverTrigger asChild>
-                            {code ? (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="h-8 text-xs font-mono max-w-[80px] truncate px-2">
-                                    {code.length > 6 ? code.slice(0, 6) + '…' : code}
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>{code}</TooltipContent>
-                              </Tooltip>
-                            ) : (
-                              <Button variant="ghost" size="sm" className="h-8 text-xs text-muted-foreground px-2">
-                                -
-                              </Button>
-                            )}
+                            <Button variant="ghost" size="sm" className="h-8 text-xs font-mono max-w-[80px] truncate px-2">
+                              {code ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span>{code.length > 6 ? code.slice(0, 6) + '…' : code}</span>
+                                  </TooltipTrigger>
+                                  {code.length > 6 && <TooltipContent>{code}</TooltipContent>}
+                                </Tooltip>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-[200px] p-3" align="start">
                             <div className="space-y-2">

@@ -419,11 +419,11 @@ func (h *subscribeFilesHandler) handleUpdate(w http.ResponseWriter, r *http.Requ
 					return
 				}
 			}
-			// Cross-table dedup: check against user codes
-			userCodes, err := h.repo.GetAllUserShortCodes(r.Context())
+			// 同表唯一性：不能与其他订阅的 file_short_code 或 custom_short_code 冲突
+			fileCodes, err := h.repo.GetAllFileShortCodes(r.Context())
 			if err == nil {
-				if _, exists := userCodes[code]; exists {
-					writeBadRequest(w, "该自定义连接与用户连接冲突")
+				if fn, exists := fileCodes[code]; exists && fn != existing.Filename {
+					writeBadRequest(w, "该自定义连接已被其他订阅使用")
 					return
 				}
 			}

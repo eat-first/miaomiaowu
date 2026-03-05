@@ -425,12 +425,12 @@ func NewUserCustomShortCodeHandler(repo *storage.TrafficRepository) http.Handler
 			}
 		}
 
-		// Check cross-table collision: code must not exist as a file short code
+		// 同表唯一性：不能与其他用户的 user_short_code 或 custom_user_short_code 冲突
 		if code != "" {
-			fileCodes, err := repo.GetAllFileShortCodes(r.Context())
+			userCodes, err := repo.GetAllUserShortCodes(r.Context())
 			if err == nil {
-				if _, exists := fileCodes[code]; exists {
-					writeError(w, http.StatusConflict, errors.New("该自定义连接与订阅连接冲突"))
+				if un, exists := userCodes[code]; exists && un != username {
+					writeError(w, http.StatusConflict, errors.New("该自定义连接已被其他用户使用"))
 					return
 				}
 			}
