@@ -257,6 +257,7 @@ MIT License
 - 🛠️ fix:模板生成的订阅节点顺序错误
 - 🛠️ fix:编辑模板直接关闭提示未保存更改
 - 🛠️ fix:编辑模板时手机端显示问题
+- 🛠️ fix:tls类型代理默认sni为空时优先取host[#65](https://github.com/iluobei/miaomiaowu/issues/65)
 ### v0.5.8 (2026-03-23)
 - 🌈 模板v3支持yaml变量
 - 🌈 节点详情支持yaml展示
