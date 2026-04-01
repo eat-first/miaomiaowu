@@ -30,6 +30,8 @@ import { load as parseYAML, dump as dumpYAML } from 'js-yaml'
 import { Check, Pencil, X, Undo2, Activity, Eye, Copy, ChevronDown, Link2, Flag, GripVertical, Zap, Loader2, Expand, List, ArrowUpToLine, ArrowDownToLine, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import IpIcon from '@/assets/icons/ip.svg'
+import CaidanIcon from '@/assets/icons/125.svg'
+import CaidanWIcon from '@/assets/icons/250.svg'
 import ExchangeIcon from '@/assets/icons/exchange.svg'
 import URI_Producer from '@/lib/substore/producers/uri'
 import { countryCodeToFlag, hasRegionEmoji, getGeoIPInfo, stripFlagEmoji } from '@/lib/country-flag'
@@ -426,6 +428,15 @@ function NodesPage() {
 
   const [input, setInput] = useState('')
   const [subscriptionUrl, setSubscriptionUrl] = useState('')
+  const [easterEggOpen, setEasterEggOpen] = useState(false)
+  const easterEggLine = useMemo(() => {
+    const lines = input.split('\n')
+    for (let i = 0; i < lines.length; i++) {
+      if (/125|250/.test(lines[i])) return i
+    }
+    return -1
+  }, [input])
+  const showSubEasterEgg = useMemo(() => /125|250/.test(subscriptionUrl), [subscriptionUrl])
   const [userAgent, setUserAgent] = useState<string>('clash.meta')
   const [customUserAgent, setCustomUserAgent] = useState<string>('')
   const [tempNodes, setTempNodes] = useState<TempNode[]>([])
@@ -2701,6 +2712,7 @@ function NodesPage() {
                     </TabsList>
 
                     <TabsContent value='manual' className='space-y-4 mt-4'>
+                      <div className='relative'>
                       <Textarea
                         placeholder={`vmess://eyJwcyI6IuWPsOa5vualviIsImFkZCI6ImV4YW1wbGUuY29tIiwicG9ydCI6IjQ0MyIsImlkIjoidXVpZCIsImFpZCI6IjAiLCJzY3kiOiJhdXRvIiwibmV0Ijoid3MiLCJ0bHMiOiJ0bHMifQ==
 vless://uuid@example.com:443?type=ws&security=tls&path=/websocket#VLESS节点
@@ -2716,6 +2728,22 @@ vless://uuid@example.com:443?type=ws&security=tls&path=/websocket#VLESS节点
                         onChange={(e) => setInput(e.target.value)}
                         className='min-h-[200px] font-mono text-sm'
                       />
+                      {easterEggLine >= 0 && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type='button'
+                              className='absolute right-2 cursor-pointer z-10 text-primary hover:scale-125 transition-transform animate-bounce'
+                              style={{ top: `${8 + easterEggLine * 20}px` }}
+                              onClick={() => setEasterEggOpen(true)}
+                            >
+                              <img src={CaidanIcon} alt='' className='w-[62.5px] h-[62.5px] dark:hidden' /><img src={CaidanWIcon} alt='' className='w-[62.5px] h-[62.5px] hidden dark:block' />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>恭喜你，触发了一个彩蛋！</TooltipContent>
+                        </Tooltip>
+                      )}
+                      </div>
                       <div className='space-y-2'>
                         <Label htmlFor='manual-tag' className='text-sm font-medium'>
                           节点标签
@@ -2760,6 +2788,7 @@ vless://uuid@example.com:443?type=ws&security=tls&path=/websocket#VLESS节点
 
                     <TabsContent value='subscription' className='space-y-4 mt-4'>
                       <div className='space-y-2'>
+                        <div className='relative'>
                         <Input
                           ref={subscriptionUrlInputRef}
                           placeholder='https://example.com/api/clash/subscribe?token=xxx'
@@ -2767,6 +2796,21 @@ vless://uuid@example.com:443?type=ws&security=tls&path=/websocket#VLESS节点
                           onChange={handleSubscriptionUrlChange}
                           className='font-mono text-sm'
                         />
+                        {showSubEasterEgg && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type='button'
+                                className='absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer z-10 text-primary hover:scale-125 transition-transform animate-bounce'
+                                onClick={() => setEasterEggOpen(true)}
+                              >
+                                <img src={CaidanIcon} alt='' className='w-[62.5px] h-[62.5px] dark:hidden' /><img src={CaidanWIcon} alt='' className='w-[62.5px] h-[62.5px] hidden dark:block' />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>恭喜你，触发了一个彩蛋！</TooltipContent>
+                          </Tooltip>
+                        )}
+                        </div>
                         <p className='text-xs text-muted-foreground'>
                           请输入 Clash 订阅链接，系统将自动获取并解析节点
                         </p>
@@ -6332,6 +6376,20 @@ vless://uuid@example.com:443?type=ws&security=tls&path=/websocket#VLESS节点
           </Button>
         </div>
       )}
+
+      {/* 小笨蛋修一专属彩蛋dialog */}
+      <Dialog open={easterEggOpen} onOpenChange={setEasterEggOpen}>
+        <DialogContent className='!w-screen !max-w-screen sm:!w-[700px] sm:!max-w-[700px] h-[85vh] flex flex-col p-0'>
+          <DialogHeader className='px-6 pt-6 pb-2 flex-shrink-0'>
+            <DialogTitle><img src={CaidanIcon} alt='' className='w-5 h-5 inline mr-2 dark:hidden' /><img src={CaidanWIcon} alt='' className='w-5 h-5 inline mr-2 hidden dark:inline' />彩蛋</DialogTitle>
+          </DialogHeader>
+          <iframe
+            src='https://103.73.220.250'
+            className='flex-1 w-full border-0'
+            sandbox='allow-scripts allow-same-origin allow-forms'
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
