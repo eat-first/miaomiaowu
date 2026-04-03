@@ -1308,8 +1308,7 @@ export function toClashProxy(node: ProxyNode): ClashProxy {
     }
   } else if (node.tls !== undefined) {
     clash.tls = node.tls
-  } else if (node.type === 'trojan') {
-    // Trojan 默认启用 TLS
+  } else if (node.type === 'trojan' && (node.security === 'tls' || node.security === 'reality')) {
     clash.tls = true
   }
 
