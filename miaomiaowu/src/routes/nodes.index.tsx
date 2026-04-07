@@ -1040,6 +1040,7 @@ function NodesPage() {
         : JSON.stringify(parsed, null, 2)
 
       setEditingClashConfig({ ...editingClashConfig, config: converted })
+      clashConfigOriginalRef.current = converted
       setClashConfigError('')
       setJsonErrorLines([])
     } catch {

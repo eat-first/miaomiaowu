@@ -1405,13 +1405,15 @@ function SubscribeFilesPage() {
         setProxyGroups(groups)
         proxyGroupsOriginalRef.current = JSON.stringify(groups)
 
-        // Check for local draft
-        if (editingNodesFile) {
+        // Check for local draft — only when dialog is open
+        if (editingNodesFile && editNodesDialogOpen) {
           const draftJson = localStorage.getItem(EDIT_NODES_DRAFT_KEY_PREFIX + editingNodesFile.id)
           if (draftJson) {
             try {
               const draft = JSON.parse(draftJson)
-              if (JSON.stringify(draft.proxyGroups) !== JSON.stringify(groups)) {
+              // Compare only the meaningful fields to avoid false positives from property ordering
+              const normalize = (gs: any[]) => gs.map(g => ({ name: g.name, type: g.type, proxies: g.proxies, use: g.use }))
+              if (JSON.stringify(normalize(draft.proxyGroups)) !== JSON.stringify(normalize(groups))) {
                 pendingNodesDraftRef.current = draft
                 setIsNodesDraftRecoveryOpen(true)
               } else {
@@ -1427,13 +1429,13 @@ function SubscribeFilesPage() {
       console.error('解析YAML失败:', error)
       toast.error('解析配置文件失败')
     }
-  }, [nodesConfigQuery.data])
+  }, [nodesConfigQuery.data, editNodesDialogOpen])
 
   // Write edit-nodes draft to localStorage when proxyGroups change
   useEffect(() => {
     if (!editNodesDialogOpen || !editingNodesFile) return
-    const current = JSON.stringify(proxyGroups)
-    if (current === proxyGroupsOriginalRef.current) return
+    const normalize = (gs: any[]) => gs.map(g => ({ name: g.name, type: g.type, proxies: g.proxies, use: g.use }))
+    if (JSON.stringify(normalize(proxyGroups)) === JSON.stringify(normalize(JSON.parse(proxyGroupsOriginalRef.current || '[]')))) return
     localStorage.setItem(
       EDIT_NODES_DRAFT_KEY_PREFIX + editingNodesFile.id,
       JSON.stringify({ proxyGroups, savedAt: Date.now() })
